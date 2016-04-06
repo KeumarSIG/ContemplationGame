@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿/*
+
+using UnityEngine;
 using System.Collections;
 
 public class InfiniteTerrain : MonoBehaviour 
@@ -20,7 +22,7 @@ public class InfiniteTerrain : MonoBehaviour
 	{
 		int _CurrentChunkCoordX = Mathf.RoundToInt(m_ViewerPosition.x / m_ChunkSize);
 		int _CurrentChunkCoordY = Mathf.RoundToInt(m_ViewerPosition.y / m_ChunkSize);
-
-		//for (int OffsetY = )
 	}
 }
+
+*/

@@ -1,0 +1,15 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MapDisplay.cs">
+    <Files>
+      <File FileName="Assets\Scripts\ReflexCamera.cs" Line="25" Column="18" />
+      <File FileName="Assets\Scripts\MapDisplay.cs" Line="7" Column="18" />
+      <File FileName="Assets\Scripts\MapGenerator.cs" Line="83" Column="56" />
+      <File FileName="Assets\Scripts\TextureGenerator.cs" Line="17" Column="2" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

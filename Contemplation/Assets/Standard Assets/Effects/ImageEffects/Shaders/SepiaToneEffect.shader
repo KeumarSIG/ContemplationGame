@@ -19,13 +19,22 @@ fixed4 frag (v2f_img i) : SV_Target
 	fixed4 original = tex2D(_MainTex, i.uv);
 	
 	// get intensity value (Y part of YIQ color space)
-	fixed Y = dot (fixed3(0.299, 0.587, 0.114), original.rgb);
+	//fixed Y = dot (fixed3(0.299, 0.587, 0.114), original.rgb);
+	//fixed Y = dot (fixed3(0.8, 0.1, -0.114), original.rgb);
 
 	// Convert to Sepia Tone by adding constant
-	fixed4 sepiaConvert = float4 (0.191, -0.054, -0.221, 0.0);
-	fixed4 output = sepiaConvert + Y;
-	output.a = original.a;
-	
+	//fixed4 sepiaConvert = float4 (0.191, -0.054, -0.221, 0.0);
+	//fixed4 sepiaConvert = float4 (-0.191, 0.554, 0.521, 0);
+	//fixed4 output = sepiaConvert + Y;
+	//output.a = original.a;
+	//output.b = fixed(1);
+
+
+	fixed3 Y = original.rgb;
+
+	fixed4 BlackAndWhite = float4 (Y.r * 0.1, Y.g * 0.1, Y.b * 0.1, 0.0); 
+	fixed4 output = BlackAndWhite;
+
 	return output;
 }
 ENDCG

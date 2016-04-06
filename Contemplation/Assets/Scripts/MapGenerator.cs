@@ -37,7 +37,7 @@ public class MapGenerator : MonoBehaviour
 	[Range(0f, 5f)] 		
 	public float m_Persistance;
 
-	[Range(1f, 10f)]		
+	[Range(1f, 3f)]		
 	public float m_Lacunarity;
 
 	public float m_MeshHeightMultiplier;

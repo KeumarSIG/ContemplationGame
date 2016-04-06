@@ -26,7 +26,11 @@ namespace UnityStandardAssets.ImageEffects
             // Disable the image effect if the shader can't
             // run on the users graphics card
             if (!shader || !shader.isSupported)
+			{
                 enabled = false;
+			}
+
+			Debug.Log("Base");
         }
 
 
@@ -42,6 +46,20 @@ namespace UnityStandardAssets.ImageEffects
                 return m_Material;
             }
         }
+
+		protected Material police
+		{
+			get
+			{
+				if (m_Material == null)
+				{
+					m_Material = new Material(shader);
+					m_Material.hideFlags = HideFlags.HideAndDontSave;
+				}
+
+				return m_Material;
+			}
+		}
 
 
         protected virtual void OnDisable()

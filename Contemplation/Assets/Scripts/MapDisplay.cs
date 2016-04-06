@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MapDisplay : MonoBehaviour 
 {
-	public Renderer m_TextureRenderer;
+	[HideInInspector] public Renderer m_TextureRenderer;
 	public MeshFilter m_MeshFilter;
 	public MeshRenderer m_MeshRenderer;
 

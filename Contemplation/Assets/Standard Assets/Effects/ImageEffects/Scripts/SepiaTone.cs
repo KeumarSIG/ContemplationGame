@@ -12,5 +12,26 @@ namespace UnityStandardAssets.ImageEffects
 		{
             Graphics.Blit (source, destination, material);
         }
+
+
+		protected override void Start()
+		{
+			/*
+			if (!SystemInfo.supportsImageEffects)
+			{
+				enabled = false;
+				return;
+			}
+
+			// Disable the image effect if the shader can't
+			// run on the users graphics card
+			if (!shader || !shader.isSupported)
+			{
+				enabled = false;
+			}
+			*/
+			print("Override");
+		}
+
     }
 }
