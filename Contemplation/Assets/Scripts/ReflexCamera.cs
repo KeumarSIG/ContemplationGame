@@ -3,26 +3,20 @@ using System.Collections;
 
 public class ReflexCamera : MonoBehaviour 
 {
-	private GameObject m_CurrentFocus;
+	public GameObject m_CurrentFocus;
+	public Shader m_CurrentFocusShader;
 
-	// Use this for initialization
-	void Start () 
-	{
-		
-	}
-	
-	// Update is called once per frame
 	void Update ()
 	{
 		if (Input.GetButtonDown("Mouse 1"))
 		{
-			RaycastHit _Raycast;
-
 			Ray _Ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit _Hit;
 
-			if (Physics.Raycast(_Ray))
+			if (Physics.Raycast(_Ray, out _Hit, Mathf.Infinity))
 			{
-				print("Grosse");
+				m_CurrentFocus = _Hit.collider.gameObject;
+				m_CurrentFocus.GetComponentInChildren<MeshRenderer>().material.shader = m_CurrentFocusShader;
 			}
 		}
 	}
