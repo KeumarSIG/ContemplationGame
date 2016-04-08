@@ -45,7 +45,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\LandingSpot.cs" />
+     <Compile Include="Assets\Scripts\Bird.cs" />
      <Compile Include="Assets\Scripts\InfiniteTerrain.cs" />
+     <Compile Include="Assets\Scripts\LandingSpotManager.cs" />
      <Compile Include="Assets\Scripts\MapDisplay.cs" />
      <Compile Include="Assets\Scripts\MapGenerator.cs" />
      <Compile Include="Assets\Scripts\MeshGenerator.cs" />
