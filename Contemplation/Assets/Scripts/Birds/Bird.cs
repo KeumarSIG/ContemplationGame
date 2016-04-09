@@ -20,7 +20,7 @@ public class Bird : MonoBehaviour
 
 	private bool m_CanLand;
 	private float m_FlyHeight;
-	private bool m_BirdBehaviorIsTriggered;
+//	private bool m_BirdBehaviorIsTriggered;
 	private Vector3 m_CurrentDestination;
 	private Rigidbody m_Rb;
 
@@ -64,17 +64,11 @@ public class Bird : MonoBehaviour
 		Vector3 _DirectionOfCurrentDestination = m_CurrentDestination - transform.position;
 		_DirectionOfCurrentDestination = new Vector3(_DirectionOfCurrentDestination.x, 0, _DirectionOfCurrentDestination.z);
 
-		print("CanLand_0");
-
 		while (m_CanLand == false)
 		{
-			print("CanLand_1");
 			m_Rb.AddForce(_DirectionOfCurrentDestination.normalized * m_Spd);
 			yield return new WaitForEndOfFrame();
-			print("CanLand_2");
 		}
-
-		print("CanLand_3");
 
 		m_Rb.velocity = Vector3.zero;
 	
@@ -107,7 +101,7 @@ public class Bird : MonoBehaviour
 		m_Rb = GetComponent<Rigidbody>();
 
 		m_BirdBehaviour = BirdBehaviour.Landed;
-		m_BirdBehaviorIsTriggered = false;
+		//m_BirdBehaviorIsTriggered = false;
 		m_CanLand = false;
 
 		DefineFlyHeight();
