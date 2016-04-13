@@ -46,15 +46,16 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Birds\Bird.cs" />
+     <Compile Include="Assets\Scripts\Birds\DetectCollision.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpot.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpotManager.cs" />
+     <Compile Include="Assets\Scripts\Birds\RaycastTest.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\InfiniteTerrain.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\MapDisplay.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\MapGenerator.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\MeshGenerator.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\Noise.cs" />
      <Compile Include="Assets\Scripts\Procedural_Generation\TextureGenerator.cs" />
-     <Compile Include="Assets\Scripts\RaycastTest.cs" />
      <Compile Include="Assets\Scripts\ReflexCamera\ObjectOfInterest.cs" />
      <Compile Include="Assets\Scripts\ReflexCamera\ReflexCamera.cs" />
      <Compile Include="Assets\ShaderForge\Example Assets\Scripts\EditorLabel.cs" />

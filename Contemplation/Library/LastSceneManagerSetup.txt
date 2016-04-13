@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scene/TerrainGeneration.unity
+- path: Assets/Scene/Birds.unity
   isLoaded: 1
   isActive: 1

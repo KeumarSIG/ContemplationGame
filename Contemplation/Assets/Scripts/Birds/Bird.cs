@@ -18,9 +18,11 @@ public class Bird : MonoBehaviour
 
 	public float m_Spd;
 
-	private bool m_CanLand;
+	public bool m_CanLand;
+	private float m_LandingHeight;
 	private float m_FlyHeight;
-//	private bool m_BirdBehaviorIsTriggered;
+	//private bool m_BirdBehaviorIsTriggered;
+	public string m_CurrentDestinationName;
 	private Vector3 m_CurrentDestination;
 	private Rigidbody m_Rb;
 
@@ -32,15 +34,16 @@ public class Bird : MonoBehaviour
 	}
 
 
-
 	// *** BEHAVIOR ***
 
 	// When landed
 	IEnumerator Landed()
 	{
-		print("Landed");
+		print("1 - Landed");
+
 		yield return new WaitForSeconds(m_LandedDuration);
-		m_CanLand = false;
+
+		SetCanLand(false);
 		StartCoroutine(TakeOff());
 	}
 
@@ -49,7 +52,7 @@ public class Bird : MonoBehaviour
 	// When is taking off
 	IEnumerator TakeOff()
 	{
-		print("TakeOff");
+		print("2 - TakeOff");
 
 		while (transform.position.y < m_FlyHeight)
 		{
@@ -67,7 +70,7 @@ public class Bird : MonoBehaviour
 	// When is flying
 	IEnumerator Flying()
 	{
-		print("Flying");
+		print("3 - Flying");
 
 		Vector3 _DirectionOfCurrentDestination = m_CurrentDestination - transform.position;
 		_DirectionOfCurrentDestination = new Vector3(_DirectionOfCurrentDestination.x, 0, _DirectionOfCurrentDestination.z);
@@ -88,11 +91,11 @@ public class Bird : MonoBehaviour
 	// When is landing
 	IEnumerator Landing()
 	{
-		print("Landing");
+		print("4 - Landing");
 
 		DefineLandingSpot();
 
-		while (transform.position.y > 10)
+		while (transform.position.y > m_LandingHeight)
 		{
 			m_Rb.AddForce(Vector3.down * m_Spd);
 			yield return new WaitForEndOfFrame();
@@ -130,6 +133,7 @@ public class Bird : MonoBehaviour
 		int _SpotToReach = Random.Range(0, _NumOfSpots);
 
 		m_CurrentDestination = m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots[_SpotToReach].transform.position;
+		m_CurrentDestinationName =  m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots[_SpotToReach].name;
 	}
 
 
@@ -143,24 +147,33 @@ public class Bird : MonoBehaviour
 
 	void DefineLandedDuration()
 	{
-		print("DefineLandedDuration");
+		
 	}
 
 
 
 	void DefineLandingSpot()
 	{
-
+		//float _Test = DetectCollision.CollisionDetection(this.transform.position, Vector3.down);
+		//float _Test = CollisionDetectionA(this.transform.position, Vector3.down);
+		/*float _Test = new Vector3	(this.transform.position.x, 
+									this.transform.position.y - CollisionDetectionA(this.transform.position, Vector3.down), 
+									this.transform.position.z
+									);*/
+		float _Test = this.transform.position.y - CollisionDetectionA(this.transform.position, Vector3.down);
+		float _Margin = 10;
+		m_LandingHeight = _Test + _Margin;
+		print("LandingHeight: " + m_LandingHeight);
 	}
 
 
 
 	void OnTriggerEnter(Collider LandingSpotCollider)
 	{
-		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponentInChildren<LandingSpot>().m_TriggerBirdLanding == true)
+		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding == true)
 		{
 			LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding = false;
-			m_CanLand = true;
+			SetCanLand(true);
 		}
 	}
 
@@ -168,9 +181,37 @@ public class Bird : MonoBehaviour
 
 	void OnTriggerExit(Collider LandingSpotCollider)
 	{
-		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponentInChildren<LandingSpot>().m_TriggerBirdLanding == false)
+		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding == false)
 		{
 			LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding = true;
 		}
+	}
+
+	void SetCanLand(bool CanLand)
+	{
+		m_CanLand = CanLand;
+	}
+
+	float CollisionDetectionA(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
+	{
+		Ray _Ray = new Ray(ObjectPosition, DirectionOfDetection);
+		RaycastHit _Hit = new RaycastHit();
+
+		if (Physics.Raycast(_Ray, out _Hit))
+		{
+			if (_Hit.collider.tag != "LandingSpot")
+			{
+				Vector3 _HitPoint = _Hit.point;
+				print("HIT_POSITION: " + _HitPoint);
+				float _DistanceFromObject = Vector3.Distance(ObjectPosition, _HitPoint);
+				print("DISTANCE_FROM_FLOOR: " + _DistanceFromObject);
+
+				print("NAME_OF_COLLIDER: " + _Hit.collider.name);
+				return _DistanceFromObject;
+			}
+		
+			return 0;
+		}
+		return 0;
 	}
 }
