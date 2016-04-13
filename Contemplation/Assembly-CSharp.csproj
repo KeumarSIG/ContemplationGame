@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\RaycastTest.cs" />
      <Compile Include="Assets\Scripts\Birds\Bird.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpot.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpotManager.cs" />

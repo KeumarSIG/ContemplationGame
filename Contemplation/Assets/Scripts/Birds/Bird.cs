@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Bird : MonoBehaviour 
 {
-	// Birds' behaviour
+	// Birds' behaviour - What's the use right now ? 
 	public enum BirdBehaviour
 	{
 		Landed = 0,
@@ -24,10 +24,14 @@ public class Bird : MonoBehaviour
 	private Vector3 m_CurrentDestination;
 	private Rigidbody m_Rb;
 
+
+
 	void Start () 
 	{
 		Initialization();
 	}
+
+
 
 	// *** BEHAVIOR ***
 
@@ -39,6 +43,8 @@ public class Bird : MonoBehaviour
 		m_CanLand = false;
 		StartCoroutine(TakeOff());
 	}
+
+
 
 	// When is taking off
 	IEnumerator TakeOff()
@@ -55,6 +61,8 @@ public class Bird : MonoBehaviour
 			
 		StartCoroutine(Flying());
 	}
+
+
 
 	// When is flying
 	IEnumerator Flying()
@@ -74,6 +82,8 @@ public class Bird : MonoBehaviour
 	
 		StartCoroutine(Landing());
 	}
+
+
 
 	// When is landing
 	IEnumerator Landing()
@@ -95,6 +105,8 @@ public class Bird : MonoBehaviour
 		StartCoroutine(Landed());
 	}
 
+
+
 	// *** BIRD'S INITIALIZATION ***
 	void Initialization()
 	{
@@ -109,6 +121,8 @@ public class Bird : MonoBehaviour
 		StartCoroutine(Landed());
 	}
 
+
+
 	// Setting the bird's up
 	void DefineNewSpot()
 	{
@@ -118,20 +132,28 @@ public class Bird : MonoBehaviour
 		m_CurrentDestination = m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots[_SpotToReach].transform.position;
 	}
 
+
+
 	void DefineFlyHeight()
 	{
 		m_FlyHeight = Random.Range(200, 300);
 	}
+
+
 
 	void DefineLandedDuration()
 	{
 		print("DefineLandedDuration");
 	}
 
+
+
 	void DefineLandingSpot()
 	{
 
 	}
+
+
 
 	void OnTriggerEnter(Collider LandingSpotCollider)
 	{
@@ -141,6 +163,8 @@ public class Bird : MonoBehaviour
 			m_CanLand = true;
 		}
 	}
+
+
 
 	void OnTriggerExit(Collider LandingSpotCollider)
 	{

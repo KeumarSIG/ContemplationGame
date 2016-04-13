@@ -11,7 +11,7 @@ public class ObjectOfInterest : MonoBehaviour
 	void Awake()
 	{
 		m_IsFocused = false;
-		m_Renderer = GetComponent<Renderer>();
+		m_Renderer = GetComponentInChildren<Renderer>();
 		m_OriginalShader = m_Renderer.material.shader;
 	}
 
