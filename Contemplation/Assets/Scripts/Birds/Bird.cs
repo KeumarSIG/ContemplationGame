@@ -3,28 +3,38 @@ using System.Collections;
 
 public class Bird : MonoBehaviour 
 {
-	// Birds' behaviour - What's the use right now ? 
-	public enum BirdBehaviour
-	{
-		Landed = 0,
-		TakeOff = 1,
-		Flying = 2,
-		Landing = 3
-	};
+	#region Speed
+	[Header("- Speed related")]
+	public float m_SpdTakeOff;
+	public float m_SpdFly;
+	public float m_SpdLand;
+	#endregion Speed
 
-	public GameObject m_RefToLandingSpotsManager;
-	public BirdBehaviour m_BirdBehaviour;
-	public float m_LandedDuration;
+	#region Behavior
+	[Header("- Behaviour related")]
+	public float m_LandingMargin;
+	public float m_LandedDurationMin;
+	public float m_LandedDurationMax;
+	private float m_LandedDuration;
 
-	public float m_Spd;
-
-	public bool m_CanLand;
-	private float m_LandingHeight;
+	public float m_FlyHeightMin;
+	public float m_FlyHeightMax;
 	private float m_FlyHeight;
-	//private bool m_BirdBehaviorIsTriggered;
-	public string m_CurrentDestinationName;
-	private Vector3 m_CurrentDestination;
+
+	private float m_LandingHeight;
+
+	public float m_MinDistanceForward;
+	public float m_MinDistanceSide;
+	#endregion Behavior
+
+	#region Other
+	[Header("- Other")]
+	public GameObject m_RefToLandingSpotsManager;
+	private bool m_CanLand;
+	private int m_LastDestination;
 	private Rigidbody m_Rb;
+	private Vector3 m_CurrentDestination;
+	#endregion Other
 
 
 
@@ -32,6 +42,7 @@ public class Bird : MonoBehaviour
 	{
 		Initialization();
 	}
+		
 
 
 	// *** BEHAVIOR ***
@@ -56,7 +67,7 @@ public class Bird : MonoBehaviour
 
 		while (transform.position.y < m_FlyHeight)
 		{
-			m_Rb.AddForce(Vector3.up * 5);
+			m_Rb.AddForce(Vector3.up * m_SpdTakeOff);
 			yield return new WaitForEndOfFrame();
 		}
 
@@ -77,7 +88,10 @@ public class Bird : MonoBehaviour
 
 		while (m_CanLand == false)
 		{
-			m_Rb.AddForce(_DirectionOfCurrentDestination.normalized * m_Spd);
+			m_Rb.AddForce(_DirectionOfCurrentDestination.normalized * m_SpdFly);
+
+			CheckCollision();
+
 			yield return new WaitForEndOfFrame();
 		}
 
@@ -97,7 +111,7 @@ public class Bird : MonoBehaviour
 
 		while (transform.position.y > m_LandingHeight)
 		{
-			m_Rb.AddForce(Vector3.down * m_Spd);
+			m_Rb.AddForce(Vector3.down * m_SpdLand);
 			yield return new WaitForEndOfFrame();
 		}
 
@@ -110,14 +124,13 @@ public class Bird : MonoBehaviour
 
 
 
-	// *** BIRD'S INITIALIZATION ***
+	//  Bird's initialization
 	void Initialization()
 	{
 		m_Rb = GetComponent<Rigidbody>();
 
-		m_BirdBehaviour = BirdBehaviour.Landed;
-		//m_BirdBehaviorIsTriggered = false;
 		m_CanLand = false;
+		m_LastDestination = -1;
 
 		DefineFlyHeight();
 		DefineNewSpot();
@@ -132,42 +145,44 @@ public class Bird : MonoBehaviour
 		int _NumOfSpots = m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots.Length;
 		int _SpotToReach = Random.Range(0, _NumOfSpots);
 
+		if (m_LastDestination != -1)
+		{
+			while (_SpotToReach == m_LastDestination)
+			{
+				_SpotToReach = Random.Range(0, _NumOfSpots);
+			}
+		}
+
+		m_LastDestination = _SpotToReach;
 		m_CurrentDestination = m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots[_SpotToReach].transform.position;
-		m_CurrentDestinationName =  m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots[_SpotToReach].name;
 	}
 
 
 
 	void DefineFlyHeight()
 	{
-		m_FlyHeight = Random.Range(200, 300);
+		m_FlyHeight = Random.Range(m_FlyHeightMin, m_FlyHeightMax);
 	}
 
 
 
 	void DefineLandedDuration()
 	{
-		
+		m_LandedDuration = Random.Range(m_LandedDurationMin, m_LandedDurationMax);
 	}
 
 
 
 	void DefineLandingSpot()
 	{
-		//float _Test = DetectCollision.CollisionDetection(this.transform.position, Vector3.down);
-		//float _Test = CollisionDetectionA(this.transform.position, Vector3.down);
-		/*float _Test = new Vector3	(this.transform.position.x, 
-									this.transform.position.y - CollisionDetectionA(this.transform.position, Vector3.down), 
-									this.transform.position.z
-									);*/
-		float _Test = this.transform.position.y - CollisionDetectionA(this.transform.position, Vector3.down);
-		float _Margin = 10;
-		m_LandingHeight = _Test + _Margin;
+		float _LandingHeight = this.transform.position.y - CustomFunctions.CollisionDetection(this.transform.position, Vector3.down);
+		m_LandingHeight = _LandingHeight + m_LandingMargin;
 		print("LandingHeight: " + m_LandingHeight);
 	}
 
 
 
+	// When entering a landing spot
 	void OnTriggerEnter(Collider LandingSpotCollider)
 	{
 		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding == true)
@@ -179,6 +194,7 @@ public class Bird : MonoBehaviour
 
 
 
+	// When leaving a landing spot
 	void OnTriggerExit(Collider LandingSpotCollider)
 	{
 		if (LandingSpotCollider.gameObject.tag == "LandingSpot" && LandingSpotCollider.GetComponent<LandingSpot>().m_TriggerBirdLanding == false)
@@ -187,31 +203,44 @@ public class Bird : MonoBehaviour
 		}
 	}
 
+
+
 	void SetCanLand(bool CanLand)
 	{
 		m_CanLand = CanLand;
 	}
 
-	float CollisionDetectionA(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
+
+
+	void CheckCollision()
 	{
-		Ray _Ray = new Ray(ObjectPosition, DirectionOfDetection);
-		RaycastHit _Hit = new RaycastHit();
-
-		if (Physics.Raycast(_Ray, out _Hit))
+		float _ForwardCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.forward);
+		if (_ForwardCollision <= m_MinDistanceForward)
 		{
-			if (_Hit.collider.tag != "LandingSpot")
-			{
-				Vector3 _HitPoint = _Hit.point;
-				print("HIT_POSITION: " + _HitPoint);
-				float _DistanceFromObject = Vector3.Distance(ObjectPosition, _HitPoint);
-				print("DISTANCE_FROM_FLOOR: " + _DistanceFromObject);
-
-				print("NAME_OF_COLLIDER: " + _Hit.collider.name);
-				return _DistanceFromObject;
-			}
-		
-			return 0;
+			print("Je vais mourir, FORWARD");
 		}
-		return 0;
+
+		float _RightCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.right);
+		if (_RightCollision <= m_MinDistanceSide)
+		{
+			print("Je vais mourir, LEFT");
+		}
+
+		float _LeftCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.left);
+		if (_LeftCollision <= m_MinDistanceSide)
+		{
+			print("Je vais mourir, RIGHT");
+		}
+
+		Debug.DrawLine(transform.position, Vector3.forward * 20);
+		Debug.DrawLine(transform.position, Vector3.right * 20);
+		Debug.DrawLine(transform.position, Vector3.left * 20);
+	}
+
+
+
+	void OnDrawGizmos()
+	{
+
 	}
 }

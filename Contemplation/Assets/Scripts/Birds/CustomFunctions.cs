@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class DetectCollision
+public static class CustomFunctions
 {
 	public static float CollisionDetection(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
 	{
@@ -14,7 +14,6 @@ public static class DetectCollision
 			{
 				Vector3 _HitPoint = _Hit.point;
 				float _DistanceFromObject = Vector3.Distance(ObjectPosition, _HitPoint);
-
 				return _DistanceFromObject;
 			}
 
@@ -24,7 +23,7 @@ public static class DetectCollision
 			}
 		}
 
-		else
+		else 
 		{
 			return 0;
 		}
