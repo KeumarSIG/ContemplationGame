@@ -5,13 +5,17 @@ public class Bird : MonoBehaviour
 {
 	#region Speed
 	[Header("- Speed related")]
+
 	public float m_SpdTakeOff;
 	public float m_SpdFly;
 	public float m_SpdLand;
 	#endregion Speed
 
+
+
 	#region Behavior
 	[Header("- Behaviour related")]
+
 	public float m_LandingMargin;
 	public float m_LandedDurationMin;
 	public float m_LandedDurationMax;
@@ -25,10 +29,15 @@ public class Bird : MonoBehaviour
 
 	public float m_MinDistanceForward;
 	public float m_MinDistanceSide;
+
+	public bool m_StopBecauseWall;
 	#endregion Behavior
+
+
 
 	#region Other
 	[Header("- Other")]
+
 	public bool m_Debug;
 	public GameObject m_RefToLandingSpotsManager;
 	private bool m_CanLand;
@@ -55,8 +64,6 @@ public class Bird : MonoBehaviour
 		print("1 - Landed");
 
 		DefineLandedDuration();
-
-		print("Landed duration: " + m_LandedDuration);
 
 		yield return new WaitForSeconds(m_LandedDuration);
 
@@ -119,8 +126,11 @@ public class Bird : MonoBehaviour
 
 		while (transform.position.y > m_LandingHeight)
 		{
-			m_Rb.AddForce(Vector3.down * m_SpdLand);
-			yield return new WaitForEndOfFrame();
+			if (m_StopBecauseWall == false)
+			{
+				m_Rb.AddForce(Vector3.down * m_SpdLand);
+				yield return new WaitForEndOfFrame();
+			}
 		}
 
 		m_Rb.velocity = Vector3.zero;
@@ -137,8 +147,8 @@ public class Bird : MonoBehaviour
 	{
 		m_Rb = GetComponent<Rigidbody>();
 
-		m_CanLand = false;
-		m_LastDestination = -1;
+		m_CanLand = false; 
+		m_LastDestination = -1; // The last destination has to be initialized to -1 (so that later, we can make sure the player doesn't target the same landing spot)
 
 		DefineFlyHeight();
 		DefineNewSpot();
@@ -153,6 +163,7 @@ public class Bird : MonoBehaviour
 		int _NumOfSpots = m_RefToLandingSpotsManager.GetComponent<LandingSpotManager>().m_LandingSpots.Length;
 		int _SpotToReach = Random.Range(0, _NumOfSpots);
 
+		// If the SPOT TO REACH is the same than the last destination, we keep on changing the SPOT TO REACH. -1 is to make sure it doesn't work while there's no spot to reach
 		if (m_LastDestination != -1)
 		{
 			while (_SpotToReach == m_LastDestination)
@@ -169,7 +180,7 @@ public class Bird : MonoBehaviour
 
 	void ChangeOrientation(Vector3 DirectionOrientation)
 	{
-		
+		// Rotate the bird towards its direction
 		float _RotationSpd = Time.deltaTime;
 		Vector3 _NewDir = Vector3.RotateTowards(transform.forward, DirectionOrientation, _RotationSpd, 0);
 		Debug.DrawRay(transform.position, _NewDir, Color.red);
@@ -196,7 +207,7 @@ public class Bird : MonoBehaviour
 	{
 		float _LandingHeight = this.transform.position.y - CustomFunctions.CollisionDetection(this.transform.position, Vector3.down);
 		m_LandingHeight = _LandingHeight + m_LandingMargin;
-		print("LandingHeight: " + m_LandingHeight);
+		//print("LandingHeight: " + m_LandingHeight);
 	}
 
 
@@ -234,21 +245,27 @@ public class Bird : MonoBehaviour
 	void CheckCollision()
 	{
 		float _ForwardCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.forward);
-		if (_ForwardCollision <= m_MinDistanceForward)
+		if (_ForwardCollision <= m_MinDistanceForward && _ForwardCollision != 0)
 		{
-			print("FORWARD: " + _ForwardCollision);
+			//print("FORWARD: " + _ForwardCollision);
+			m_Rb.velocity = Vector3.zero;
+			m_StopBecauseWall = true;
 		}
 
 		float _RightCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.right);
-		if (_RightCollision <= m_MinDistanceSide)
+		if (_RightCollision <= m_MinDistanceSide && _RightCollision != 0)
 		{
-			print("RIGHT: " + _RightCollision);
+			//print("RIGHT: " + _RightCollision);
+			m_Rb.velocity = Vector3.zero;
+			m_StopBecauseWall = true;
 		}
 
 		float _LeftCollision = CustomFunctions.CollisionDetection(transform.position, -this.transform.right);
-		if (_LeftCollision <= m_MinDistanceSide)
+		if (_LeftCollision <= m_MinDistanceSide && _LeftCollision != 0)
 		{
-			print("LEFT: " + _LeftCollision);
+			//print("LEFT: " + _LeftCollision);
+			m_Rb.velocity = Vector3.zero;
+			m_StopBecauseWall = true;
 		}
 	}
 
@@ -259,16 +276,16 @@ public class Bird : MonoBehaviour
 		if (m_Debug == true)
 		{
 			Gizmos.color = Color.magenta;
-			Gizmos.DrawLine(transform.position, transform.position + transform.forward * 50);
+			Gizmos.DrawLine(transform.position, transform.position + transform.forward * m_MinDistanceForward);
 
 			Gizmos.color = Color.cyan;
-			Gizmos.DrawLine(transform.position, transform.position + transform.right * 50);
+			Gizmos.DrawLine(transform.position, transform.position + transform.right * m_MinDistanceSide);
 
 			Gizmos.color = Color.yellow;
-			Gizmos.DrawLine(transform.position, transform.position - transform.right * 50);
+			Gizmos.DrawLine(transform.position, transform.position - transform.right * m_MinDistanceSide);
 
 			Gizmos.color = Color.black;
-			Gizmos.DrawLine(transform.position, transform.position + Vector3.down * 50);
+			Gizmos.DrawLine(transform.position, transform.position + Vector3.down * m_FlyHeight);
 		}
 	}
 }
