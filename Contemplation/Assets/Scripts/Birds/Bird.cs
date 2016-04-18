@@ -29,6 +29,7 @@ public class Bird : MonoBehaviour
 
 	#region Other
 	[Header("- Other")]
+	public bool m_Debug;
 	public GameObject m_RefToLandingSpotsManager;
 	private bool m_CanLand;
 	private int m_LastDestination;
@@ -40,6 +41,7 @@ public class Bird : MonoBehaviour
 
 	void Start () 
 	{
+		m_Debug = true;
 		Initialization();
 	}
 		
@@ -51,6 +53,10 @@ public class Bird : MonoBehaviour
 	IEnumerator Landed()
 	{
 		print("1 - Landed");
+
+		DefineLandedDuration();
+
+		print("Landed duration: " + m_LandedDuration);
 
 		yield return new WaitForSeconds(m_LandedDuration);
 
@@ -88,6 +94,8 @@ public class Bird : MonoBehaviour
 
 		while (m_CanLand == false)
 		{
+			ChangeOrientation(_DirectionOfCurrentDestination);
+
 			m_Rb.AddForce(_DirectionOfCurrentDestination.normalized * m_SpdFly);
 
 			CheckCollision();
@@ -159,6 +167,17 @@ public class Bird : MonoBehaviour
 
 
 
+	void ChangeOrientation(Vector3 DirectionOrientation)
+	{
+		
+		float _RotationSpd = Time.deltaTime;
+		Vector3 _NewDir = Vector3.RotateTowards(transform.forward, DirectionOrientation, _RotationSpd, 0);
+		Debug.DrawRay(transform.position, _NewDir, Color.red);
+		transform.rotation = Quaternion.LookRotation(_NewDir);
+	}
+
+
+
 	void DefineFlyHeight()
 	{
 		m_FlyHeight = Random.Range(m_FlyHeightMin, m_FlyHeightMax);
@@ -214,33 +233,42 @@ public class Bird : MonoBehaviour
 
 	void CheckCollision()
 	{
-		float _ForwardCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.forward);
+		float _ForwardCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.forward);
 		if (_ForwardCollision <= m_MinDistanceForward)
 		{
-			print("Je vais mourir, FORWARD");
+			print("FORWARD: " + _ForwardCollision);
 		}
 
-		float _RightCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.right);
+		float _RightCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.right);
 		if (_RightCollision <= m_MinDistanceSide)
 		{
-			print("Je vais mourir, LEFT");
+			print("RIGHT: " + _RightCollision);
 		}
 
-		float _LeftCollision = CustomFunctions.CollisionDetection(transform.position, Vector3.left);
+		float _LeftCollision = CustomFunctions.CollisionDetection(transform.position, -this.transform.right);
 		if (_LeftCollision <= m_MinDistanceSide)
 		{
-			print("Je vais mourir, RIGHT");
+			print("LEFT: " + _LeftCollision);
 		}
-
-		Debug.DrawLine(transform.position, Vector3.forward * 20);
-		Debug.DrawLine(transform.position, Vector3.right * 20);
-		Debug.DrawLine(transform.position, Vector3.left * 20);
 	}
 
 
 
 	void OnDrawGizmos()
 	{
+		if (m_Debug == true)
+		{
+			Gizmos.color = Color.magenta;
+			Gizmos.DrawLine(transform.position, transform.position + transform.forward * 50);
 
+			Gizmos.color = Color.cyan;
+			Gizmos.DrawLine(transform.position, transform.position + transform.right * 50);
+
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawLine(transform.position, transform.position - transform.right * 50);
+
+			Gizmos.color = Color.black;
+			Gizmos.DrawLine(transform.position, transform.position + Vector3.down * 50);
+		}
 	}
 }
