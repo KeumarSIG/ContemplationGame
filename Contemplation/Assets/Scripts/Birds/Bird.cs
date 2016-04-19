@@ -30,6 +30,7 @@ public class Bird : MonoBehaviour
 	public float m_MinDistanceForward;
 	public float m_MinDistanceSide;
 
+	private GameObject m_CollisionChecker;
 	public bool m_StopBecauseWall;
 	#endregion Behavior
 
@@ -50,10 +51,26 @@ public class Bird : MonoBehaviour
 
 	void Start () 
 	{
-		m_Debug = true;
+		//m_Debug = true;
 		Initialization();
 	}
 		
+
+
+	//  Bird's initialization
+	void Initialization()
+	{
+		m_Rb = GetComponent<Rigidbody>();
+		m_CollisionChecker = transform.GetChild(0).gameObject;
+
+		m_CanLand = false; 
+		m_LastDestination = -1; // The last destination has to be initialized to -1 (so that later, we can make sure the player doesn't target the same landing spot)
+
+		DefineFlyHeight();
+		DefineNewSpot();
+		StartCoroutine(Landed());
+	}
+
 
 
 	// *** BEHAVIOR ***
@@ -142,18 +159,7 @@ public class Bird : MonoBehaviour
 
 
 
-	//  Bird's initialization
-	void Initialization()
-	{
-		m_Rb = GetComponent<Rigidbody>();
 
-		m_CanLand = false; 
-		m_LastDestination = -1; // The last destination has to be initialized to -1 (so that later, we can make sure the player doesn't target the same landing spot)
-
-		DefineFlyHeight();
-		DefineNewSpot();
-		StartCoroutine(Landed());
-	}
 
 
 
@@ -205,7 +211,7 @@ public class Bird : MonoBehaviour
 
 	void DefineLandingSpot()
 	{
-		float _LandingHeight = this.transform.position.y - CustomFunctions.CollisionDetection(this.transform.position, Vector3.down);
+		float _LandingHeight = this.transform.position.y - CustomFunctions.GetCollisionDistance(this.transform.position, Vector3.down);
 		m_LandingHeight = _LandingHeight + m_LandingMargin;
 		//print("LandingHeight: " + m_LandingHeight);
 	}
@@ -244,30 +250,73 @@ public class Bird : MonoBehaviour
 
 	void CheckCollision()
 	{
-		float _ForwardCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.forward);
+		float _ForwardCollision = CheckCollisionForward();
+		float _LeftCollision = CheckCollisionLeft();
+		float _RightCollision = CheckCollisionRight();
+	}
+		
+
+
+	float CheckCollisionForward()
+	{
+		float _ForwardCollision = CustomFunctions.GetCollisionDistance(transform.position, this.transform.forward);
+
 		if (_ForwardCollision <= m_MinDistanceForward && _ForwardCollision != 0)
 		{
-			//print("FORWARD: " + _ForwardCollision);
-			m_Rb.velocity = Vector3.zero;
-			m_StopBecauseWall = true;
+			return _ForwardCollision;
 		}
 
-		float _RightCollision = CustomFunctions.CollisionDetection(transform.position, this.transform.right);
-		if (_RightCollision <= m_MinDistanceSide && _RightCollision != 0)
-		{
-			//print("RIGHT: " + _RightCollision);
-			m_Rb.velocity = Vector3.zero;
-			m_StopBecauseWall = true;
-		}
-
-		float _LeftCollision = CustomFunctions.CollisionDetection(transform.position, -this.transform.right);
-		if (_LeftCollision <= m_MinDistanceSide && _LeftCollision != 0)
-		{
-			//print("LEFT: " + _LeftCollision);
-			m_Rb.velocity = Vector3.zero;
-			m_StopBecauseWall = true;
+		else 
+		{	
+			return 0;
 		}
 	}
+
+
+
+	float CheckCollisionRight()
+	{
+		float _RightCollision = CustomFunctions.GetCollisionDistance(transform.position, this.transform.right);
+
+		if (_RightCollision <= m_MinDistanceSide && _RightCollision != 0)
+		{
+			return _RightCollision;
+		}
+
+		else 
+		{
+			return 0;
+		}
+	}
+
+
+
+	float CheckCollisionLeft()
+	{
+		float _LeftCollision = CustomFunctions.GetCollisionDistance(transform.position, -this.transform.right);
+
+		if (_LeftCollision <= m_MinDistanceSide && _LeftCollision != 0)
+		{
+			return _LeftCollision;
+		}
+
+		else 
+		{
+			return 0;
+		}
+	}
+
+
+
+	void ballec()
+	{
+		m_Rb.velocity = Vector3.zero;
+		m_StopBecauseWall = true;
+	}
+
+
+
+	// What corresponds to "CheckCollisionBottom()" is "DefineLandingSpot()"
 
 
 
@@ -288,4 +337,31 @@ public class Bird : MonoBehaviour
 			Gizmos.DrawLine(transform.position, transform.position + Vector3.down * m_FlyHeight);
 		}
 	}
+
+	IEnumerator AvoidMovement()
+	{
+		yield return new WaitForEndOfFrame();
+
+		//RayUpwards();
+		RaySideway();
+	}
+
+	/*
+	void RayUpwards()
+	{
+		bool _Collision = CustomFunctions.GetCollision(m_CollisionChecker.transform.position, m_CollisionChecker.transform.forward);
+	}
+	*/
+
+	void RaySideway()
+	{
+
+	}
+
+	/*
+	void Update()
+	{
+		m_CollisionChecker.transform.Rotate(Vector3.up * Time.deltaTime * 10new Vector3(0, 50, 0));
+	}
+	*/
 }

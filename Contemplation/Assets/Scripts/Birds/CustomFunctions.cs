@@ -3,7 +3,7 @@ using System.Collections;
 
 public static class CustomFunctions
 {
-	public static float CollisionDetection(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
+	public static float GetCollisionDistance(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
 	{
 		Ray _Ray = new Ray(ObjectPosition, DirectionOfDetection);
 		RaycastHit _Hit = new RaycastHit();
@@ -26,6 +26,30 @@ public static class CustomFunctions
 		else 
 		{
 			return 0;
+		}
+	}
+
+	public static bool GetCollision(Vector3 ObjectPosition, Vector3 DirectionOfDetection)
+	{
+		Ray _Ray = new Ray(ObjectPosition, DirectionOfDetection);
+		RaycastHit _Hit = new RaycastHit();
+
+		if (Physics.Raycast(_Ray, out _Hit))
+		{
+			if (_Hit.collider.tag != "LandingSpot")
+			{
+				return true;
+			}
+
+			else 
+			{
+				return false;
+			}
+		}
+
+		else 
+		{
+			return false;
 		}
 	}
 }
