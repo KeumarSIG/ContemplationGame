@@ -135,7 +135,6 @@ public class Bird : MonoBehaviour
 					if (m_IsChangingDirection == true)
 					{
 						bool _Avoidance = CustomFunctions.RandomBool();
-						print("avoidance = " + _Avoidance);
 
 						while (m_IsChangingDirection == true)
 						{
@@ -143,12 +142,14 @@ public class Bird : MonoBehaviour
 							{
 								GoForward(_DirectionOfCurrentDestination);
 								GoUpwards();
+								StartCoroutine(ResetChangeDirection());
 							}
 
 							else if (_Avoidance == true)
 							{
 								GoForward(_DirectionOfCurrentDestination);
 								GoUpwards();
+								StartCoroutine(ResetChangeDirection());
 							}
 
 							yield return new WaitForEndOfFrame();
@@ -191,7 +192,10 @@ public class Bird : MonoBehaviour
 
 
 
-
+	IEnumerator Avoiding()
+	{
+		yield break;
+	}
 
 
 
@@ -422,5 +426,12 @@ public class Bird : MonoBehaviour
 	void GoUpwards()
 	{
 		m_Rb.AddForce(Vector3.up * m_SpdTakeOff);
+	}
+
+	IEnumerator ResetChangeDirection()
+	{
+		print("PLEASE");
+		yield return new WaitForSeconds(3);
+		ChangeDirection(false);
 	}
 }

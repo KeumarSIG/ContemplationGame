@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Birds\Bird.cs" />
+     <Compile Include="Assets\Scripts\Birds\BirdNew.cs" />
      <Compile Include="Assets\Scripts\Birds\CustomFunctions.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpot.cs" />
      <Compile Include="Assets\Scripts\Birds\LandingSpotManager.cs" />
