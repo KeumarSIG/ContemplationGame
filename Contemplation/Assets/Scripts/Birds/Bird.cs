@@ -99,7 +99,7 @@ public class Bird : MonoBehaviour
 
 		while (transform.position.y < m_FlyHeight)
 		{
-			m_Rb.AddForce(Vector3.up * m_SpdTakeOff);
+			GoUpwards();
 			yield return new WaitForEndOfFrame();
 		}
 
@@ -126,31 +126,41 @@ public class Bird : MonoBehaviour
 			// If no collision has been detected
 			if (m_IsChangingDirection == false) 
 			{
-				while (m_IsChangingDirection == false)
+				while (true)
 				{
 					ChangeOrientation(_DirectionOfCurrentDestination);
 					GoForward(_DirectionOfCurrentDestination);
 					CheckCollision();
+
+					if (m_IsChangingDirection == true)
+					{
+						bool _Avoidance = CustomFunctions.RandomBool();
+						print("avoidance = " + _Avoidance);
+
+						while (m_IsChangingDirection == true)
+						{
+							if (_Avoidance == false)
+							{
+								GoForward(_DirectionOfCurrentDestination);
+								GoUpwards();
+							}
+
+							else if (_Avoidance == true)
+							{
+								GoForward(_DirectionOfCurrentDestination);
+								GoUpwards();
+							}
+
+							yield return new WaitForEndOfFrame();
+						}
+					}
 					yield return new WaitForEndOfFrame();
 				}
 			}
-
-			// If a collision has been detected
-			else
-			{
-				while (m_IsChangingDirection == true)
-				{
-					print("JNSP");
-
-					yield return new WaitForEndOfFrame();
-				}
-			}
-
 			yield return new WaitForEndOfFrame();
 		}
 
 		m_Rb.velocity = Vector3.zero;
-	
 		StartCoroutine(Landing());
 	}
 
@@ -280,6 +290,11 @@ public class Bird : MonoBehaviour
 		{
 			StopBird();
 		}
+
+		else 
+		{
+			//ChangeDirection(true);
+		}
 	}
 		
 
@@ -341,9 +356,13 @@ public class Bird : MonoBehaviour
 	void StopBird()
 	{
 		m_Rb.velocity = Vector3.zero;
-		m_IsChangingDirection = true;
+		ChangeDirection(true);
 	}
 
+	void ChangeDirection(bool Direction)
+	{
+		m_IsChangingDirection = Direction;
+	}
 
 
 	// What corresponds to "CheckCollisionBottom()" is "DefineLandingSpot()"
@@ -368,27 +387,40 @@ public class Bird : MonoBehaviour
 		}
 	}
 
+
+
 	IEnumerator AvoidMovement()
 	{
 		yield return new WaitForEndOfFrame();
 
 		//RayUpwards();
-		RaySideway();
+		//RaySideway();
 	}
-		
+
+
+
 	void RayUpwards()
 	{
-		bool _Collision = CustomFunctions.GetCollision(m_CollisionChecker.transform.position, m_CollisionChecker.transform.forward);
+		//bool _Collision = CustomFunctions.GetCollision(m_CollisionChecker.transform.position, m_CollisionChecker.transform.forward);
 		m_CollisionChecker.transform.Rotate(Vector3.up * Time.deltaTime * 50);
 	}
+
+
 
 	void RaySideway()
 	{
 
 	}
 
+
+
 	void GoForward(Vector3 DirectionOfCurrentDestination)
 	{
 		m_Rb.AddForce(DirectionOfCurrentDestination.normalized * m_SpdFly);
+	}
+
+	void GoUpwards()
+	{
+		m_Rb.AddForce(Vector3.up * m_SpdTakeOff);
 	}
 }

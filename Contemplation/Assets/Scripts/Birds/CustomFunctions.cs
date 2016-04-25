@@ -52,4 +52,19 @@ public static class CustomFunctions
 			return false;
 		}
 	}
+
+	public static bool RandomBool()
+	{
+		int _Value = Mathf.RoundToInt(Random.Range(0, 1));
+
+		if (_Value == 1)
+		{
+			return true;
+		}
+
+		else 
+		{
+			return false;
+		}
+	}
 }
