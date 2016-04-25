@@ -60,7 +60,6 @@
      <Compile Include="Assets\ShaderForge\Example Assets\Scripts\EditorLabel.cs" />
      <Compile Include="Assets\ShaderForge\Example Assets\Scripts\EnableCameraDepthInForward.cs" />
      <Compile Include="Assets\ShaderForge\Example Assets\Scripts\SoftNormalsToVertexColor.cs" />
-     <Compile Include="Assets\Test.cs" />
      <None Include="Assets\ShaderForge\Editor\InternalResources\GPU Rendering\SFN_LightPosition\SFN_LightPosition.shader" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\ShaderForge\Editor\InternalResources\GPU Rendering\SFN_Fresnel\SFN_Fresnel_EXP.shader" />

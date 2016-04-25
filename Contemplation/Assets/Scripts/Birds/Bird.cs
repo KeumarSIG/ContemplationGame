@@ -32,6 +32,7 @@ public class Bird : MonoBehaviour
 
 	private GameObject m_CollisionChecker;
 	public bool m_StopBecauseWall;
+	public bool m_IsChangingDirection;
 	#endregion Behavior
 
 
@@ -61,10 +62,11 @@ public class Bird : MonoBehaviour
 	void Initialization()
 	{
 		m_Rb = GetComponent<Rigidbody>();
-		m_CollisionChecker = transform.GetChild(0).gameObject;
+		m_CollisionChecker = transform.GetChild(0).gameObject; // It has to be child(0), check in the hierarchy
 
 		m_CanLand = false; 
 		m_LastDestination = -1; // The last destination has to be initialized to -1 (so that later, we can make sure the player doesn't target the same landing spot)
+		m_IsChangingDirection = false;
 
 		DefineFlyHeight();
 		DefineNewSpot();
@@ -113,16 +115,36 @@ public class Bird : MonoBehaviour
 	{
 		print("3 - Flying");
 
+		// Define direction to reach the current destination
 		Vector3 _DirectionOfCurrentDestination = m_CurrentDestination - transform.position;
 		_DirectionOfCurrentDestination = new Vector3(_DirectionOfCurrentDestination.x, 0, _DirectionOfCurrentDestination.z);
 
+
+		// While the bird doesn't have to land
 		while (m_CanLand == false)
 		{
-			ChangeOrientation(_DirectionOfCurrentDestination);
+			// If no collision has been detected
+			if (m_IsChangingDirection == false) 
+			{
+				while (m_IsChangingDirection == false)
+				{
+					ChangeOrientation(_DirectionOfCurrentDestination);
+					GoForward(_DirectionOfCurrentDestination);
+					CheckCollision();
+					yield return new WaitForEndOfFrame();
+				}
+			}
 
-			m_Rb.AddForce(_DirectionOfCurrentDestination.normalized * m_SpdFly);
+			// If a collision has been detected
+			else
+			{
+				while (m_IsChangingDirection == true)
+				{
+					print("JNSP");
 
-			CheckCollision();
+					yield return new WaitForEndOfFrame();
+				}
+			}
 
 			yield return new WaitForEndOfFrame();
 		}
@@ -189,7 +211,7 @@ public class Bird : MonoBehaviour
 		// Rotate the bird towards its direction
 		float _RotationSpd = Time.deltaTime;
 		Vector3 _NewDir = Vector3.RotateTowards(transform.forward, DirectionOrientation, _RotationSpd, 0);
-		Debug.DrawRay(transform.position, _NewDir, Color.red);
+		//Debug.DrawRay(transform.position, _NewDir, Color.red);
 		transform.rotation = Quaternion.LookRotation(_NewDir);
 	}
 
@@ -253,6 +275,11 @@ public class Bird : MonoBehaviour
 		float _ForwardCollision = CheckCollisionForward();
 		float _LeftCollision = CheckCollisionLeft();
 		float _RightCollision = CheckCollisionRight();
+
+		if (_ForwardCollision != 0 || _LeftCollision != 0 || _RightCollision != 0)
+		{
+			StopBird();
+		}
 	}
 		
 
@@ -263,6 +290,7 @@ public class Bird : MonoBehaviour
 
 		if (_ForwardCollision <= m_MinDistanceForward && _ForwardCollision != 0)
 		{
+			//StopBird();
 			return _ForwardCollision;
 		}
 
@@ -280,6 +308,7 @@ public class Bird : MonoBehaviour
 
 		if (_RightCollision <= m_MinDistanceSide && _RightCollision != 0)
 		{
+			//StopBird();
 			return _RightCollision;
 		}
 
@@ -297,6 +326,7 @@ public class Bird : MonoBehaviour
 
 		if (_LeftCollision <= m_MinDistanceSide && _LeftCollision != 0)
 		{
+			//StopBird();
 			return _LeftCollision;
 		}
 
@@ -308,10 +338,10 @@ public class Bird : MonoBehaviour
 
 
 
-	void ballec()
+	void StopBird()
 	{
 		m_Rb.velocity = Vector3.zero;
-		m_StopBecauseWall = true;
+		m_IsChangingDirection = true;
 	}
 
 
@@ -345,23 +375,20 @@ public class Bird : MonoBehaviour
 		//RayUpwards();
 		RaySideway();
 	}
-
-	/*
+		
 	void RayUpwards()
 	{
 		bool _Collision = CustomFunctions.GetCollision(m_CollisionChecker.transform.position, m_CollisionChecker.transform.forward);
+		m_CollisionChecker.transform.Rotate(Vector3.up * Time.deltaTime * 50);
 	}
-	*/
 
 	void RaySideway()
 	{
 
 	}
 
-	/*
-	void Update()
+	void GoForward(Vector3 DirectionOfCurrentDestination)
 	{
-		m_CollisionChecker.transform.Rotate(Vector3.up * Time.deltaTime * 10new Vector3(0, 50, 0));
+		m_Rb.AddForce(DirectionOfCurrentDestination.normalized * m_SpdFly);
 	}
-	*/
 }
